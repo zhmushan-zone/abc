@@ -14,6 +14,9 @@ jobs:
       - uses: actions/setup-node@master
         with:
           node-version: 12
+      - uses: actions/setup-python@master
+        with:
+          python-version: 3.x
 
       - name: Install deps
         run: npm i -g tslint typescript
@@ -29,3 +32,20 @@ jobs:
 
       - name: Run tests
         run: deno test -A -c tsconfig.json
+
+      - name: Run Benchmarks
+        run: python ./tool/benchmark.py
+
+      - name: Post Benchmarks
+        if: github.ref == 'refs/heads/test_ci' && github.repository == 'zhmushan/abc'
+        env:
+          PAT: ${{ secrets.PAT }}
+        run: |
+          git clone --depth 1 -b benchmarks https://${PAT}@github.com/zhmushan/abc.git benchmarks
+          python ./tools/build_benchmark_jsons.py
+          cd benchmarks
+          git config user.email "zhmushan@qq.com"
+          git config user.name "zhmushan"
+          git add .
+          git commit --message "Update benchmarks"
+          git push origin benchmarks
