@@ -34,7 +34,7 @@ jobs:
         run: deno test -A -c tsconfig.json
 
       - name: Run Benchmarks
-        run: python ./tool/benchmark.py
+        run: python ./tools/benchmark.py
 
       - name: Post Benchmarks
         if: github.ref == 'refs/heads/test_ci' && github.repository == 'zhmushan/abc'
